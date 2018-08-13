@@ -203,7 +203,7 @@
       "progressUpdateIntervalMs": 500
     },
     {
-      "text": "val documents \u003d loadFile(\"gs://de-training-input-bucket/words/big.txt\").toDS()\ndocuments.show()",
+      "text": "val documents \u003d loadFile(\"gs://de-training-input/words/big.txt\").toDS()\ndocuments.show()",
       "user": "anonymous",
       "dateUpdated": "2018-08-13 11:14:39.647",
       "config": {

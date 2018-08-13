@@ -1,7 +1,7 @@
 {
    "paragraphs":[
       {
-         "text":"%md\n## Reading and Writing files from the Cloud Dataproc cluster with Scala\n\nThe very first task that you may require is to find a way to load the provided datasets for the course. Equally importantly, you must also find a way to write the results in a format the instructors can review it.\n\nAlthough you are not limited to use these methods, we'll provide you with the functions below to help you interact with the data, so that you can go beyond what the course offers.\n\n[Alimazon dataset](http://127.0.0.1:8000) is partitioned on a set of files using a JSON line-compressed format (`jsonl.gz`), which is stored under the `gs://de-training-input-bucket` bucket on the `Cloud Dataproc` cluster.",
+         "text":"%md\n## Reading and Writing files from the Cloud Dataproc cluster with Scala\n\nThe very first task that you may require is to find a way to load the provided datasets for the course. Equally importantly, you must also find a way to write the results in a format the instructors can review it.\n\nAlthough you are not limited to use these methods, we'll provide you with the functions below to help you interact with the data, so that you can go beyond what the course offers.\n\n[Alimazon dataset](http://127.0.0.1:8000) is partitioned on a set of files using a JSON line-compressed format (`jsonl.gz`), which is stored under the `gs://de-training-input` bucket on the `Cloud Dataproc` cluster.",
          "user":"anonymous",
          "dateUpdated":"2018-08-07T20:55:29+0000",
          "config":{
@@ -31,7 +31,7 @@
             "msg":[
                {
                   "type":"HTML",
-                  "data":"<div class=\"markdown-body\">\n<h2>Reading and Writing files from the Cloud Dataproc cluster with Scala</h2>\n<p>The very first task that you may require is to find a way to load the provided datasets for the course. Equally importantly, you must also find a way to write the results in a format the instructors can review it.</p>\n<p>Although you are not limited to use these methods, we&rsquo;ll provide you with the functions below to help you interact with the data, so that you can go beyond what the course offers.</p>\n<p><a href=\"http://127.0.0.1:8000\">Alimazon dataset</a> is partitioned on a set of files using a JSON line-compressed format (<code>jsonl.gz</code>), which is stored under the <code>gs://de-training-input-bucket</code> bucket on the <code>Cloud Dataproc</code> cluster.</p>\n</div>"
+                  "data":"<div class=\"markdown-body\">\n<h2>Reading and Writing files from the Cloud Dataproc cluster with Scala</h2>\n<p>The very first task that you may require is to find a way to load the provided datasets for the course. Equally importantly, you must also find a way to write the results in a format the instructors can review it.</p>\n<p>Although you are not limited to use these methods, we&rsquo;ll provide you with the functions below to help you interact with the data, so that you can go beyond what the course offers.</p>\n<p><a href=\"http://127.0.0.1:8000\">Alimazon dataset</a> is partitioned on a set of files using a JSON line-compressed format (<code>jsonl.gz</code>), which is stored under the <code>gs://de-training-input</code> bucket on the <code>Cloud Dataproc</code> cluster.</p>\n</div>"
                }
             ]
          },
@@ -186,7 +186,7 @@
          "$$hashKey":"object:10514"
       },
       {
-         "text":"val clients_df = load_jsonl(\"gs://de-training-input-bucket/alimazon/50000/clients/\")\nclients_df.show(10)",
+         "text":"val clients_df = load_jsonl(\"gs://de-training-input/alimazon/50000/clients/\")\nclients_df.show(10)",
          "dateUpdated":"2018-08-07T20:53:22+0000",
          "config":{
             "colWidth":12,
@@ -276,7 +276,7 @@
          "$$hashKey":"object:10516"
       },
       {
-         "text":" val clients_ds = sc.textFile(\"gs://de-training-input-bucket/alimazon/50000/clients/*.jsonl.gz\").toDS\n clients_ds.take(10)\n",
+         "text":" val clients_ds = sc.textFile(\"gs://de-training-input/alimazon/50000/clients/*.jsonl.gz\").toDS\n clients_ds.take(10)\n",
          "dateUpdated":"2018-08-07T20:53:22+0000",
          "config":{
             "colWidth":12,
@@ -319,7 +319,7 @@
          "$$hashKey":"object:10517"
       },
       {
-         "text":"%md\n## Write the output: Spark\n\nNow let's see some options for writing the output of your job.\n\nGiven that the operations are made over a dataset that is partitioned and distributed across several nodes, the task of writing the results into a single file may not seem obvious.\n\nBy default the `.write()` function creates a file for each partition of the dataset. So to write the results into a single file, we can do one of the following:\n\n- Use the `.write()` function and concatenate the resulting files with other tools such as `cat`.\n\n- Collect the `Dataframe` partitions into one RDD and then write it into a file. \nThis may not be the right way, given that in a real environment the dataset we are working with may not even fit in the memory of just one worker.\n\n- We can also control the number of partitions of `Dataframe` using the `.coalesce()` or `.repartitions()` functions to reduce the number of partitions. Take into account that `coalesce` uses the existing partitions to minimize the amount of data that's shuffled. And that `repartition` creates new partitions and does a full shuffle over the dataset, which is more computationally expensive. Also, this operation can overload a worker and fail during execution.\n\nThe example below uses the third option by performing some operations over the dataset to report the number of clients of each country and then write the result into a single `.csv` file.\n\n**NOTE:** The output bucket URL should correspond with the `number` assigned to you for the course. For example:\n`gs://de-training-output-bucket-1` or `gs://de-training-output-bucket-2`",
+         "text":"%md\n## Write the output: Spark\n\nNow let's see some options for writing the output of your job.\n\nGiven that the operations are made over a dataset that is partitioned and distributed across several nodes, the task of writing the results into a single file may not seem obvious.\n\nBy default the `.write()` function creates a file for each partition of the dataset. So to write the results into a single file, we can do one of the following:\n\n- Use the `.write()` function and concatenate the resulting files with other tools such as `cat`.\n\n- Collect the `Dataframe` partitions into one RDD and then write it into a file. \nThis may not be the right way, given that in a real environment the dataset we are working with may not even fit in the memory of just one worker.\n\n- We can also control the number of partitions of `Dataframe` using the `.coalesce()` or `.repartitions()` functions to reduce the number of partitions. Take into account that `coalesce` uses the existing partitions to minimize the amount of data that's shuffled. And that `repartition` creates new partitions and does a full shuffle over the dataset, which is more computationally expensive. Also, this operation can overload a worker and fail during execution.\n\nThe example below uses the third option by performing some operations over the dataset to report the number of clients of each country and then write the result into a single `.csv` file.\n\n**NOTE:** The output bucket URL should correspond with the `number` assigned to you for the course. For example:\n`gs://de-training-output-1` or `gs://de-training-output-2`",
          "user":"anonymous",
          "dateUpdated":"2018-08-07T21:06:08+0000",
          "config":{
@@ -349,7 +349,7 @@
             "msg":[
                {
                   "type":"HTML",
-                  "data":"<div class=\"markdown-body\">\n<h2>Write the output: Spark</h2>\n<p>Now let&rsquo;s see some options for writing the output of your job.</p>\n<p>Given that the operations are made over a dataset that is partitioned and distributed across several nodes, the task of writing the results into a single file may not seem obvious.</p>\n<p>By default the <code>.write()</code> function creates a file for each partition of the dataset. So to write the results into a single file, we can do one of the following:</p>\n<ul>\n  <li>\n  <p>Use the <code>.write()</code> function and concatenate the resulting files with other tools such as <code>cat</code>.</p></li>\n  <li>\n  <p>Collect the <code>Dataframe</code> partitions into one RDD and then write it into a file.<br/>This may not be the right way, given that in a real environment the dataset we are working with may not even fit in the memory of just one worker.</p></li>\n  <li>\n  <p>We can also control the number of partitions of <code>Dataframe</code> using the <code>.coalesce()</code> or <code>.repartitions()</code> functions to reduce the number of partitions. Take into account that <code>coalesce</code> uses the existing partitions to minimize the amount of data that&rsquo;s shuffled. And that <code>repartition</code> creates new partitions and does a full shuffle over the dataset, which is more computationally expensive. Also, this operation can overload a worker and fail during execution.</p></li>\n</ul>\n<p>The example below uses the third option by performing some operations over the dataset to report the number of clients of each country and then write the result into a single <code>.csv</code> file.</p>\n<p><strong>NOTE:</strong> The output bucket URL should correspond with the <code>number</code> assigned to you for the course. For example:<br/><code>gs://de-training-output-bucket-1</code> or <code>gs://de-training-output-bucket-2</code></p>\n</div>"
+                  "data":"<div class=\"markdown-body\">\n<h2>Write the output: Spark</h2>\n<p>Now let&rsquo;s see some options for writing the output of your job.</p>\n<p>Given that the operations are made over a dataset that is partitioned and distributed across several nodes, the task of writing the results into a single file may not seem obvious.</p>\n<p>By default the <code>.write()</code> function creates a file for each partition of the dataset. So to write the results into a single file, we can do one of the following:</p>\n<ul>\n  <li>\n  <p>Use the <code>.write()</code> function and concatenate the resulting files with other tools such as <code>cat</code>.</p></li>\n  <li>\n  <p>Collect the <code>Dataframe</code> partitions into one RDD and then write it into a file.<br/>This may not be the right way, given that in a real environment the dataset we are working with may not even fit in the memory of just one worker.</p></li>\n  <li>\n  <p>We can also control the number of partitions of <code>Dataframe</code> using the <code>.coalesce()</code> or <code>.repartitions()</code> functions to reduce the number of partitions. Take into account that <code>coalesce</code> uses the existing partitions to minimize the amount of data that&rsquo;s shuffled. And that <code>repartition</code> creates new partitions and does a full shuffle over the dataset, which is more computationally expensive. Also, this operation can overload a worker and fail during execution.</p></li>\n</ul>\n<p>The example below uses the third option by performing some operations over the dataset to report the number of clients of each country and then write the result into a single <code>.csv</code> file.</p>\n<p><strong>NOTE:</strong> The output bucket URL should correspond with the <code>number</code> assigned to you for the course. For example:<br/><code>gs://de-training-output-1</code> or <code>gs://de-training-output-2</code></p>\n</div>"
                }
             ]
          },
@@ -409,7 +409,7 @@
          "$$hashKey":"object:10519"
       },
       {
-         "text":"client_counts.coalesce(1).write.\n    format(\"com.databricks.spark.csv\").\n    option(\"header\", false).\n    option(\"delimiter\", \",\").\n    save(\"gs://de-training-output-bucket-0/output-sc/\")",
+         "text":"client_counts.coalesce(1).write.\n    format(\"com.databricks.spark.csv\").\n    option(\"header\", false).\n    option(\"delimiter\", \",\").\n    save(\"gs://de-training-output-0/output-sc/\")",
          "dateUpdated":"2018-08-07T20:53:22+0000",
          "config":{
             "colWidth":12,
